@@ -1,0 +1,2 @@
+2024-08-31 09:25:14,856 - MainThread - INFO     - Line:  137 - logging_util - configure_logging - Logging setup complete.
+2024-08-31 09:25:14,857 - MainThread - INFO     - Line:  210 - logging_util - main - This is a test log entry from the main function.
