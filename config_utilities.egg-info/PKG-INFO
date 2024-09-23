@@ -2,6 +2,6 @@ Metadata-Version: 2.1
 Name: config_utilities
 Version: 0.2.0
 Summary: Utilities for configuration management and logging setup.
-Home-page: http://yourprojecturl.com
+Home-page: https://github.com/audkus/config_utilities.git
 Author: Steffen S. Rasmussen
 Author-email: steffen@audkus.dk
