@@ -81,7 +81,7 @@ def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:
 
     # Load and validate configuration using config_manager
     from config_utilities.config_manager import load_and_validate_config  # Import within function to avoid circular dependencies
-    config = load_and_validate_config(config_path)
+    config, _ = load_and_validate_config(config_path)
 
     # Configure logging using the loaded configuration
     configure_logging(module_name, config)
@@ -99,6 +99,7 @@ def configure_logging(module_name: str, config: configparser.ConfigParser) -> No
         OSError: If there are issues with creating the log directory.
     """
     log_dir: str = config.get("Logging", "log_dir")
+
     log_override: bool = config.getboolean("Logging", "log_override")
     global LOG_FUNCTION_CALLS
     LOG_FUNCTION_CALLS = config.getboolean("Logging", "log_function_calls")

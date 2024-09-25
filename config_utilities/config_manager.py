@@ -290,7 +290,7 @@ def main() -> None:
     """
     Main function demonstrating how to use the config_manager module.
     """
-    config = load_and_validate_config()
+    config, config_path = load_and_validate_config()
 
     log_dir = config.get('Logging', 'log_dir')
     global_log_level = config.get('log_level', 'global_log_level')

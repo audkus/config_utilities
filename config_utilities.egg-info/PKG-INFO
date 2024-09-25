@@ -5,3 +5,4 @@ Summary: Utilities for configuration management and logging setup.
 Home-page: https://github.com/audkus/config_utilities.git
 Author: Steffen S. Rasmussen
 Author-email: steffen@audkus.dk
+License-File: LICENSE
