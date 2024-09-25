@@ -9,4 +9,5 @@ setup(
     author='Steffen S. Rasmussen',
     author_email='steffen@audkus.dk',
     url='https://github.com/audkus/config_utilities.git',
+    license='MIT',
 )
