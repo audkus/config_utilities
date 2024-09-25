@@ -80,7 +80,7 @@ def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:
         config_path = os.path.abspath(config_path)
 
     # Load and validate configuration using config_manager
-    from config_utilities.config_manager import load_and_validate_config  # Import within function to avoid circular dependencies
+    from config_utilities_audkus.config_manager import load_and_validate_config  # Import within function to avoid circular dependencies
     config, _ = load_and_validate_config(config_path)
 
     # Configure logging using the loaded configuration
