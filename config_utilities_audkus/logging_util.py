@@ -79,11 +79,10 @@ def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:
     if config_path is not None:
         config_path = os.path.abspath(config_path)
 
-    # Load and validate configuration using config_manager
-    from config_utilities_audkus.config_manager import load_and_validate_config  # Import within function to avoid circular dependencies
-    config, _ = load_and_validate_config(config_path)
+    # Import within function to avoid circular dependencies
+    from config_utilities_audkus.config_manager import load_and_validate_config
 
-    # Configure logging using the loaded configuration
+    config, _ = load_and_validate_config(config_path)
     configure_logging(module_name, config)
 
 
@@ -106,9 +105,12 @@ def configure_logging(module_name: str, config: configparser.ConfigParser) -> No
     use_global_log_level: bool = config.getboolean("Logging", "use_global_log_level", fallback=True)
 
     # Determine log level based on global settings
-    log_level: str = config.get("log_level", "global_log_level", fallback="INFO").upper() if use_global_log_level else "INFO"
+    log_level: str = config.get("log_level", "global_log_level", fallback="INFO").upper() \
+        if use_global_log_level else "INFO"
 
-    log_format: str = config.get("Logging", "log_format", fallback="%(asctime)s - %(threadName)-10s - %(levelname)-8s - Line: %(lineno)4d - %(module)s - %(funcName)s - %(message)s")
+    log_format: str = config.get("Logging", "log_format", fallback="%(asctime)s - %(threadName)-10s - "
+                                                                   "%(levelname)-8s - Line: %(lineno)4d - "
+                                                                   "%(module)s - %(funcName)s - %(message)s")
 
     if log_level == 'NONE':
         logging.disable(logging.CRITICAL + 1)
