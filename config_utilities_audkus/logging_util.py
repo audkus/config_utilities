@@ -39,24 +39,24 @@ from typing import Optional, Tuple
 LOG_FUNCTION_CALLS: bool = True
 
 
-def find_project_root(start_path: str,
-                      markers: Tuple[str, ...] = ('config.ini', '.git', 'setup.py', 'requirements.txt')) -> str:
-    """
-    Find the project root by looking for specific marker files or directories.
-
-    Args:
-        start_path (str): The starting directory to begin searching from.
-        markers (Tuple[str, ...]): A tuple of marker files or directories that signify the project root.
-
-    Returns:
-        str: The path to the project root directory.
-    """
-    current_path: str = start_path
-    while current_path != os.path.dirname(current_path):  # Stop when reaching the filesystem root
-        if any(os.path.exists(os.path.join(current_path, marker)) for marker in markers):
-            return current_path
-        current_path = os.path.dirname(current_path)
-    return start_path  # Fallback to the start path if no marker was found
+# def find_project_root(start_path: str,
+#                       markers: Tuple[str, ...] = ('config.ini', '.git', 'setup.py', 'requirements.txt')) -> str:
+#     """
+#     Find the project root by looking for specific marker files or directories.
+#
+#     Args:
+#         start_path (str): The starting directory to begin searching from.
+#         markers (Tuple[str, ...]): A tuple of marker files or directories that signify the project root.
+#
+#     Returns:
+#         str: The path to the project root directory.
+#     """
+#     current_path: str = start_path
+#     while current_path != os.path.dirname(current_path):  # Stop when reaching the filesystem root
+#         if any(os.path.exists(os.path.join(current_path, marker)) for marker in markers):
+#             return current_path
+#         current_path = os.path.dirname(current_path)
+#     return start_path  # Fallback to the start path if no marker was found
 
 
 def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:

@@ -65,6 +65,39 @@ These imports will work regardless of where the package is installed (GitHub, Py
 
 ## Detailed Setup and Usage
 
+### Config Manager
+
+The `config_manager` module provides centralized management of your application's configuration files, ensuring consistent behavior across different parts of the project.
+
+Key features include:
+- **Locating the project root**: The module searches for specific marker files (e.g., `config.ini`, `.git`, `setup.py`) to determine the root directory of your project.
+- **Ensuring the existence of the configuration file**: If no configuration file is found, the module creates a default `config.ini` file.
+- **Setting default values**: Default settings for logging are added to the configuration file if they are missing.
+- **Loading and validating the configuration**: The module validates the configuration file and makes sure it is ready for use in the application.
+
+### Example usage:
+
+```python
+from config_manager import load_and_validate_config
+
+config = load_and_validate_config()
+log_dir = config.get('Logging', 'log_dir')
+global_log_level = config.get('log_level', 'global_log_level')
+```
+
+This ensures that your application is always running with the correct configuration settings, even if the configuration file needs to be created from scratch.
+
+To demonstrate the functionality, you can use the `main` function in `config_manager.py`:
+
+```python
+if __name__ == "__main__":
+    config, config_path = load_and_validate_config()
+    log_dir = config.get('Logging', 'log_dir', fallback='logs')
+    global_log_level = config.get('log_level', 'global_log_level', fallback='INFO')
+    print(f"Log directory: {log_dir}")
+    print(f"Effective log level: {global_log_level}")
+```
+
 ### Configuration File (`config.ini`)
 
 By default, the application looks for a `config.ini` file in the project’s root directory. If it does not exist, the module will create one with the following default contents:
@@ -161,32 +194,7 @@ This setting controls whether function calls and their parameters/return values 
 The **global log level** is a single log level that applies across all modules in your application. This simplifies logging configuration by providing a consistent log level for the entire application.
 
 - **When `use_global_log_level` is `True`**: The global log level applies to all modules.
-- **When `use_global_log_level` is `False**`: Each module can have its own log level, specified under the `[log_level]` section.
-
----
-
-## Example Configuration (`config.ini`)
-
-Here’s an example `config.ini` that customizes logging behavior for different modules:
-
-```ini
-[Logging]
-log_dir = /var/log/myapp
-log_override = false
-log_function_calls = true
-use_global_log_level = false
-
-[log_level]
-global_log_level = INFO
-myapp.module1 = DEBUG
-myapp.module2 = ERROR
-```
-
-In this setup:
-- Logs are saved in `/var/log/myapp`.
-- Logs are appended (`log_override = false`).
-- Function calls are logged.
-- Individual modules have their own log levels.
+- **When `use_global_log_level` is `False`**: Each module can have its own log level, specified under the `[log_level]` section.
 
 ---
 
