@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
 ### Application Imports
 
-Whether you install the module from GitHub or PyPI (when available), the import statements will be the same:
+Whether you install the module from GitHub or PyPI, the import statements will be the same:
 
 ```python
 from logging_util import setup_logging, log_function_call
