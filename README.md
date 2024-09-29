@@ -98,6 +98,53 @@ if __name__ == "__main__":
     print(f"Effective log level: {global_log_level}")
 ```
 
+---
+
+### Saving Configuration
+
+The `save_config` function allows you to save any changes made to the configuration back to the configuration file. This is useful if you modify any values during runtime and want to persist them to the `config.ini`.
+
+#### Example Usage
+
+Here’s an example of how to use the `save_config` function:
+
+```python
+from config_manager import load_and_validate_config, save_config
+
+# Load the existing configuration
+config, config_path = load_and_validate_config()
+
+# Modify the configuration as needed
+config.set('Logging', 'log_dir', '/new/log/directory')
+
+# Save the updated configuration
+save_config(config, config_path)
+
+print(f"Configuration saved to {config_path}")
+```
+
+In this example, the `log_dir` setting in the `Logging` section is updated and then saved back to the configuration file.
+
+#### Function Signature
+
+```python
+def save_config(config: configparser.ConfigParser, config_path: str) -> None:
+    """
+    Save the configuration to the specified file path.
+
+    Args:
+        config (configparser.ConfigParser): The configuration object to save.
+        config_path (str): The path to the configuration file.
+
+    Raises:
+        IOError: If the configuration file cannot be written to.
+    """
+```
+
+Use `save_config` whenever you need to persist changes made to the configuration object during runtime. Ensure that the `config_path` is correct to avoid overwriting the wrong configuration file.
+
+---
+
 ### Configuration File (`config.ini`)
 
 By default, the application looks for a `config.ini` file in the project’s root directory. If it does not exist, the module will create one with the following default contents:

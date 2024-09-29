@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='config_utilities',
-    version='0.3.0',
+    version='0.3.2',
     packages=find_packages(),
     install_requires=[],
     description='Utilities for configuration management and logging setup.',
