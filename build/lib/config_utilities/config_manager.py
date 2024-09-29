@@ -90,8 +90,12 @@ def ensure_config_exists(config_path: str) -> configparser.ConfigParser:
     if os.path.exists(config_path):
         config.read(config_path)
     else:
-        # create_default_config(config_path, config)
-        save_config(config, config_path)
+        create_default_config(config_path, config)  # Create the config with default values
+
+    # Check if the 'Logging' section exists; if not, populate defaults
+    if not config.has_section("Logging"):
+        set_default_logging_config(config)
+
     return config
 
 
@@ -110,11 +114,6 @@ def create_default_config(config_path: str, config: configparser.ConfigParser) -
     set_default_logging_config(config)
 
     save_config(config, config_path)
-    # try:
-    #     with open(config_path, 'w') as configfile:
-    #         config.write(configfile)
-    # except IOError as e:
-    #     raise IOError(f"Failed to write to the configuration file at {config_path}: {e}")
 
 
 def set_default_logging_config(config: configparser.ConfigParser) -> None:
@@ -140,53 +139,6 @@ def set_default_logging_config(config: configparser.ConfigParser) -> None:
         config.set('Logging', 'use_global_log_level', 'true')
 
 
-# def load_and_validate_config(config_path: Optional[str] = None) -> configparser.ConfigParser:
-#     """
-#     Load the configuration file, validate its sections, and populate with default values if needed.
-#     Warns if the configuration file is loaded from a different path than the first load.
-#
-#     Args:
-#         config_path (Optional[str]): The path to the configuration file. If None, it tries to locate it automatically.
-#
-#     Returns:
-#         configparser.ConfigParser: The validated configuration object.
-#     """
-#     global FIRST_CONFIG_PATH, PRIMARY_CONFIG
-#
-#     if config_path is None:
-#         project_root: str = find_project_root(os.getcwd())
-#         config_path = os.path.join(project_root, 'config.ini')
-#
-#     config_path = os.path.abspath(config_path)
-#     logging.debug(f"Resolved config_path: {config_path}")
-#
-#     if FIRST_CONFIG_PATH is not None and FIRST_CONFIG_PATH != config_path:
-#         logging.warning(f"Configuration file loaded from a different location: {config_path} "
-#                         f"(first loaded from {FIRST_CONFIG_PATH})")
-#         return PRIMARY_CONFIG
-#
-#     if FIRST_CONFIG_PATH is None:
-#         FIRST_CONFIG_PATH = config_path
-#         config: configparser.ConfigParser = ensure_config_exists(config_path)
-#         PRIMARY_CONFIG = config
-#     else:
-#         config = PRIMARY_CONFIG
-#
-#     modules: List[str] = get_all_module_names(config, config_path)
-#
-#     for module in modules:
-#         if not config.has_option('log_level', module):
-#             config.set('log_level', module, 'INFO')
-#
-#     save_config(config, config_path)
-#     # try:
-#     #     with open(config_path, 'w') as configfile:
-#     #         config.write(configfile)
-#     # except IOError as e:
-#     #     raise IOError(f"Failed to write to the configuration file at {config_path}: {e}")
-#
-#     return config
-
 def load_and_validate_config(config_path: Optional[str] = None) -> Tuple[configparser.ConfigParser, str]:
     """
     Load the configuration file, validate its sections, and populate with default values if needed.
@@ -196,7 +148,8 @@ def load_and_validate_config(config_path: Optional[str] = None) -> Tuple[configp
         config_path (Optional[str]): The path to the configuration file. If None, it tries to locate it automatically.
 
     Returns:
-        Tuple[configparser.ConfigParser, str]: The validated configuration object and the path to the configuration file.
+        Tuple[configparser.ConfigParser, str]: The validated configuration object and the path to the
+        configuration file.
     """
     global FIRST_CONFIG_PATH, PRIMARY_CONFIG
 
@@ -222,7 +175,6 @@ def load_and_validate_config(config_path: Optional[str] = None) -> Tuple[configp
     save_config(config, config_path)
 
     return config, config_path
-
 
 
 def get_all_module_names(config: configparser.ConfigParser, config_path: str) -> List[str]:
@@ -254,8 +206,6 @@ def get_all_module_names(config: configparser.ConfigParser, config_path: str) ->
 
     if new_modules_added:
         save_config(config, config_path)
-        # with open(config_path, 'w') as configfile:
-        #     config.write(configfile)
 
     return static_modules
 
@@ -290,13 +240,13 @@ def main() -> None:
     """
     Main function demonstrating how to use the config_manager module.
     """
-    config = load_and_validate_config()
+    config, config_path = load_and_validate_config()
 
-    log_dir = config.get('Logging', 'log_dir')
-    global_log_level = config.get('log_level', 'global_log_level')
-    use_global_log_level = config.getboolean('Logging', 'use_global_log_level')
+    log_dir = config.get('Logging', 'log_dir', fallback='logs')
+    global_log_level = config.get('log_level', 'global_log_level', fallback='INFO')
+    use_global_log_level = config.getboolean('Logging', 'use_global_log_level', fallback=True)
 
-    effective_log_level = global_log_level if use_global_log_level else "INFO"  # Default fallback to INFO
+    effective_log_level = global_log_level if use_global_log_level else "INFO"
 
     print(f"Log directory: {log_dir}")
     print(f"Effective log level: {effective_log_level}")

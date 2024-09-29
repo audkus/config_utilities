@@ -39,24 +39,24 @@ from typing import Optional, Tuple
 LOG_FUNCTION_CALLS: bool = True
 
 
-def find_project_root(start_path: str,
-                      markers: Tuple[str, ...] = ('config.ini', '.git', 'setup.py', 'requirements.txt')) -> str:
-    """
-    Find the project root by looking for specific marker files or directories.
-
-    Args:
-        start_path (str): The starting directory to begin searching from.
-        markers (Tuple[str, ...]): A tuple of marker files or directories that signify the project root.
-
-    Returns:
-        str: The path to the project root directory.
-    """
-    current_path: str = start_path
-    while current_path != os.path.dirname(current_path):  # Stop when reaching the filesystem root
-        if any(os.path.exists(os.path.join(current_path, marker)) for marker in markers):
-            return current_path
-        current_path = os.path.dirname(current_path)
-    return start_path  # Fallback to the start path if no marker was found
+# def find_project_root(start_path: str,
+#                       markers: Tuple[str, ...] = ('config.ini', '.git', 'setup.py', 'requirements.txt')) -> str:
+#     """
+#     Find the project root by looking for specific marker files or directories.
+#
+#     Args:
+#         start_path (str): The starting directory to begin searching from.
+#         markers (Tuple[str, ...]): A tuple of marker files or directories that signify the project root.
+#
+#     Returns:
+#         str: The path to the project root directory.
+#     """
+#     current_path: str = start_path
+#     while current_path != os.path.dirname(current_path):  # Stop when reaching the filesystem root
+#         if any(os.path.exists(os.path.join(current_path, marker)) for marker in markers):
+#             return current_path
+#         current_path = os.path.dirname(current_path)
+#     return start_path  # Fallback to the start path if no marker was found
 
 
 def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:
@@ -79,11 +79,10 @@ def setup_logging(module_name: str, config_path: Optional[str] = None) -> None:
     if config_path is not None:
         config_path = os.path.abspath(config_path)
 
-    # Load and validate configuration using config_manager
-    from config_utilities.config_manager import load_and_validate_config  # Import within function to avoid circular dependencies
-    config = load_and_validate_config(config_path)
+    # Import within function to avoid circular dependencies
+    from config_utilities.config_manager import load_and_validate_config
 
-    # Configure logging using the loaded configuration
+    config, _ = load_and_validate_config(config_path)
     configure_logging(module_name, config)
 
 
@@ -99,15 +98,19 @@ def configure_logging(module_name: str, config: configparser.ConfigParser) -> No
         OSError: If there are issues with creating the log directory.
     """
     log_dir: str = config.get("Logging", "log_dir")
+
     log_override: bool = config.getboolean("Logging", "log_override")
     global LOG_FUNCTION_CALLS
     LOG_FUNCTION_CALLS = config.getboolean("Logging", "log_function_calls")
     use_global_log_level: bool = config.getboolean("Logging", "use_global_log_level", fallback=True)
 
     # Determine log level based on global settings
-    log_level: str = config.get("log_level", "global_log_level", fallback="INFO").upper() if use_global_log_level else "INFO"
+    log_level: str = config.get("log_level", "global_log_level", fallback="INFO").upper() \
+        if use_global_log_level else "INFO"
 
-    log_format: str = config.get("Logging", "log_format", fallback="%(asctime)s - %(threadName)-10s - %(levelname)-8s - Line: %(lineno)4d - %(module)s - %(funcName)s - %(message)s")
+    log_format: str = config.get("Logging", "log_format", fallback="%(asctime)s - %(threadName)-10s - "
+                                                                   "%(levelname)-8s - Line: %(lineno)4d - "
+                                                                   "%(module)s - %(funcName)s - %(message)s")
 
     if log_level == 'NONE':
         logging.disable(logging.CRITICAL + 1)
