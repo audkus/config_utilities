@@ -80,7 +80,7 @@ Key features include:
 ```python
 from config_manager import load_and_validate_config
 
-config = load_and_validate_config()
+config = load_and_validate_config(enable_logging=True)
 log_dir = config.get('Logging', 'log_dir')
 global_log_level = config.get('log_level', 'global_log_level')
 ```
@@ -91,7 +91,7 @@ To demonstrate the functionality, you can use the `main` function in `config_man
 
 ```python
 if __name__ == "__main__":
-    config, config_path = load_and_validate_config()
+    config, config_path = load_and_validate_config(enable_logging=True)
     log_dir = config.get('Logging', 'log_dir', fallback='logs')
     global_log_level = config.get('log_level', 'global_log_level', fallback='INFO')
     print(f"Log directory: {log_dir}")
@@ -112,7 +112,7 @@ Here’s an example of how to use the `save_config` function:
 from config_manager import load_and_validate_config, save_config
 
 # Load the existing configuration
-config, config_path = load_and_validate_config()
+config, config_path = load_and_validate_config(enable_logging=True)
 
 # Modify the configuration as needed
 config.set('Logging', 'log_dir', '/new/log/directory')
@@ -147,7 +147,8 @@ Use `save_config` whenever you need to persist changes made to the configuration
 
 ### Configuration File (`config.ini`)
 
-By default, the application looks for a `config.ini` file in the project’s root directory. If it does not exist, the module will create one with the following default contents:
+By default, the application looks for a `config.ini` file in the project’s root directory. If it does not exist, the module will create one. 
+If load_and_validate_config(enable_logging=True) is set the following default contents will be added :
 
 ```ini
 [Logging]
@@ -160,6 +161,8 @@ use_global_log_level = true
 global_log_level = INFO
 ```
 
+If load_and_validate_config(enable_logging=False) or load_and_validate_config() then an empty config.ini is created, and the developer can set the required config parameters.
+
 ### Customize the Configuration
 
 You can modify `config.ini` to suit your project’s needs:
@@ -167,7 +170,7 @@ You can modify `config.ini` to suit your project’s needs:
 1. **log_dir**: The directory where log files are saved.
 2. **log_override**: When `True`, logs are overwritten with each new application run. If `False`, logs are appended to the existing file.
 3. **log_function_calls**: When `True`, logs function calls (if decorated with `@log_function_call`).
-4. **use_global_log_level**: Controls whether the global log level applies to all modules.
+4. **use_global_log_level**: Controls whether the global log level applies to all modules. If this is set to true, the global log level will be used unless a module-specific log level is defined. If set to false, each module may have its own logging configuration.
 5. **global_log_level**: Sets the default log level for all modules.
 
 For more granular control, specify log levels for individual modules in the `[log_level]` section:

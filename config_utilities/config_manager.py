@@ -73,45 +73,46 @@ def find_project_root(start_path: str,
     return start_path
 
 
-def ensure_config_exists(config_path: str) -> configparser.ConfigParser:
+def ensure_config_exists(config_path: str, enable_logging: bool = False) -> configparser.ConfigParser:
     """
     Ensure the configuration file exists at the specified path, creating a default one if necessary.
 
     Args:
         config_path (str): The path to the configuration file.
+        enable_logging (bool): Whether to include logging-related configurations.
 
     Returns:
         configparser.ConfigParser: The configuration object populated with the content of the file.
-
-    Raises:
-        IOError: If the configuration file cannot be created or written to.
     """
     config: configparser.ConfigParser = configparser.ConfigParser()
     if os.path.exists(config_path):
         config.read(config_path)
     else:
-        create_default_config(config_path, config)  # Create the config with default values
+        create_default_config(config_path, config, enable_logging)  # Create the config with default values
 
-    # Check if the 'Logging' section exists; if not, populate defaults
-    if not config.has_section("Logging"):
+    # If logging is enabled and the section doesn't exist, populate defaults
+    if enable_logging and not config.has_section("Logging"):
         set_default_logging_config(config)
 
     return config
 
 
-def create_default_config(config_path: str, config: configparser.ConfigParser) -> None:
+def create_default_config(config_path: str, config: configparser.ConfigParser, enable_logging: bool) -> None:
     """
     Create a default configuration file with initial sections and values.
 
     Args:
         config_path (str): The path where the configuration file should be created.
         config (configparser.ConfigParser): The ConfigParser object to be populated with default values.
+        enable_logging (bool): Whether to include logging-related configurations.
 
     Raises:
         IOError: If the configuration file cannot be written to.
     """
     logging.info(f"Creating a default configuration file at {config_path}")
-    set_default_logging_config(config)
+
+    if enable_logging:
+        set_default_logging_config(config)
 
     save_config(config, config_path)
 
@@ -139,13 +140,14 @@ def set_default_logging_config(config: configparser.ConfigParser) -> None:
         config.set('Logging', 'use_global_log_level', 'true')
 
 
-def load_and_validate_config(config_path: Optional[str] = None) -> Tuple[configparser.ConfigParser, str]:
+def load_and_validate_config(config_path: Optional[str] = None, enable_logging: bool = False) -> Tuple[configparser.ConfigParser, str]:
     """
     Load the configuration file, validate its sections, and populate with default values if needed.
     Warns if the configuration file is loaded from a different path than the first load.
 
     Args:
         config_path (Optional[str]): The path to the configuration file. If None, it tries to locate it automatically.
+        enable_logging (bool): Whether to include logging-related configurations.
 
     Returns:
         Tuple[configparser.ConfigParser, str]: The validated configuration object and the path to the
@@ -167,7 +169,7 @@ def load_and_validate_config(config_path: Optional[str] = None) -> Tuple[configp
 
     if FIRST_CONFIG_PATH is None:
         FIRST_CONFIG_PATH = config_path
-        config: configparser.ConfigParser = ensure_config_exists(config_path)
+        config: configparser.ConfigParser = ensure_config_exists(config_path, enable_logging)
         PRIMARY_CONFIG = config
     else:
         config = PRIMARY_CONFIG
@@ -240,7 +242,7 @@ def main() -> None:
     """
     Main function demonstrating how to use the config_manager module.
     """
-    config, config_path = load_and_validate_config()
+    config, config_path = load_and_validate_config(enable_logging=True)
 
     log_dir = config.get('Logging', 'log_dir', fallback='logs')
     global_log_level = config.get('log_level', 'global_log_level', fallback='INFO')
